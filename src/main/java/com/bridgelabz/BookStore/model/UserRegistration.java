@@ -32,8 +32,6 @@ public class UserRegistration {
                 this.dob=userDTO.getDob();
                 this.password= userDTO.getPassword();
                 this.email= userDTO.getEmail();
-                this.verify=userDTO.isVerify();
-                this.otp=userDTO.getOtp();
         }
         public UserRegistration(Integer userId,UserDTO userDTO){
                 this.userId=getUserId();
@@ -42,8 +40,7 @@ public class UserRegistration {
                 this.dob=userDTO.getDob();
                 this.password= userDTO.getPassword();
                 this.email= userDTO.getEmail();
-                this.verify=userDTO.isVerify();
-                this.otp=userDTO.getOtp();
+
         }
 
 }

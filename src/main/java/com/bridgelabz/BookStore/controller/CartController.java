@@ -4,6 +4,7 @@ import com.bridgelabz.BookStore.dto.CartDTO;
 import com.bridgelabz.BookStore.dto.ResponseDTO;
 import com.bridgelabz.BookStore.model.Cart;
 import com.bridgelabz.BookStore.service.CartService;
+import com.bridgelabz.BookStore.service.ICartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ import java.util.Optional;
 public class CartController {
 
     @Autowired
-    CartService cartService;
+    ICartService cartService;
 
     @PostMapping("/create")
     public ResponseEntity<ResponseDTO> insertItem(@Valid @RequestBody CartDTO cartdto) {

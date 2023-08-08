@@ -5,6 +5,7 @@ import com.bridgelabz.BookStore.dto.UserLoginDTO;
 import com.bridgelabz.BookStore.exception.EmailAlreadyExistsException;
 import com.bridgelabz.BookStore.model.UserRegistration;
 import com.bridgelabz.BookStore.repository.UserRegistrationRepository;
+import com.bridgelabz.BookStore.service.IUserService;
 import com.bridgelabz.BookStore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,7 @@ import java.util.List;
 public class UserRegistrationController {
 
     @Autowired
-    UserService userRegistrationService;
+    IUserService userRegistrationService;
 
     //Add User
     @PostMapping("/register")
@@ -96,18 +97,18 @@ public class UserRegistrationController {
         return new ResponseEntity(dto,HttpStatus.ACCEPTED);
     }
     // Delete User by ID
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<ResponseDTO> deleteUserById(@PathVariable Integer id) {
-        ResponseEntity<ResponseDTO> deletedUser = userRegistrationService.deleteUserById(id);
-
-        if (deletedUser != null) {
-            ResponseDTO responseDTO = new ResponseDTO("User deleted successfully", deletedUser);
-            return new ResponseEntity<>(responseDTO, HttpStatus.OK);
-        } else {
-            ResponseDTO responseDTO = new ResponseDTO("User not found", null);
-            return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
-        }
-    }
+//    @DeleteMapping("/delete/{id}")
+//    public ResponseEntity<ResponseDTO> deleteUserById(@PathVariable Integer id) {
+//        ResponseEntity<ResponseDTO> deletedUser = userRegistrationService.deleteUserById(id);
+//
+//        if (deletedUser != null) {
+//            ResponseDTO responseDTO = new ResponseDTO("User deleted successfully", deletedUser);
+//            return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+//        } else {
+//            ResponseDTO responseDTO = new ResponseDTO("User not found", null);
+//            return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
+//        }
+//    }
 
     @GetMapping("/getToken/{email}")
     public ResponseEntity<ResponseDTO> getToken(@PathVariable String email){

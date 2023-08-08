@@ -9,83 +9,67 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
-public class BookService {
+public class BookService implements IBookService {
 
     @Autowired
     BookStoreRepository bookStoreRepository;
 
-
+    @Override
     public Book createBook(BookDTO bookDTO) {
         Book newBook = new Book(bookDTO);
-        return  bookStoreRepository.save(newBook);
-
-    }
-    public Optional<Book> getBookDataById(int BookId) {// dont use optional exception use
-        Optional<Book> getBook=bookStoreRepository.findById(BookId);
-        if(getBook.isEmpty()){
-            throw new BookStoreException("Book Store Details for id not found");
-        }
-        return getBook;
-
+        return bookStoreRepository.save(newBook);
     }
 
+    @Override
+    public Book getBookDataById(int bookId) {
+        return bookStoreRepository.findById(bookId)
+                .orElseThrow(() -> new BookStoreException("Book Store Details for id not found"));
+    }
+
+    @Override
     public List<Book> getAllBookData() {
-        List<Book> getBooks=bookStoreRepository.findAll();
+        List<Book> getBooks = bookStoreRepository.findAll();
+        if (getBooks.isEmpty()) {
+            throw new BookStoreException("No books found");
+        }
         return getBooks;
     }
 
-
-    public Book updateRecordById(Integer BookId, BookDTO bookDTO) {// dont use optional dry
-
-        Optional<Book> updateBook = bookStoreRepository.findById(BookId);
-        if (updateBook.isEmpty()) {
-            throw new BookStoreException("Book record does not found");
-        } else {
-            Book updateUser = new Book(BookId, bookDTO);
-            bookStoreRepository.save(updateUser);
-            return updateUser;
-
-        }
+    @Override
+    public Book updateRecordById(Integer bookId, BookDTO bookDTO) {
+        Book existingBook = bookStoreRepository.findById(bookId)
+                .orElseThrow(() -> new BookStoreException("Book record does not found"));
+        existingBook.updateFromDTO(bookDTO);
+        return bookStoreRepository.save(existingBook);
     }
 
-
-
-    public String deleteRecordByToken(int BookId) {//dry
-        Optional<Book> newBook = bookStoreRepository.findById(BookId);
-        if (newBook.isEmpty()) {
-            throw new BookStoreException("Book record does not found");
-        } else {
-            bookStoreRepository.deleteById(BookId);
-        }
-        return "data deleted succesfull";
+    @Override
+    public String deleteRecordByToken(int bookId) {
+        Book existingBook = bookStoreRepository.findById(bookId)
+                .orElseThrow(() -> new BookStoreException("Book record does not found"));
+        bookStoreRepository.delete(existingBook);
+        return "Data deleted successfully";
     }
 
-
-
+    @Override
     public List<Book> getBookByName(String bookName) {
-        List<Book> findBook= bookStoreRepository.findByBookName(bookName);
-        if(findBook.isEmpty()){
-            throw new BookStoreException(" Details for provided Book is not found");
+        List<Book> findBook = bookStoreRepository.findByBookName(bookName);
+        if (findBook.isEmpty()) {
+            throw new BookStoreException("Details for provided Book is not found");
         }
         return findBook;
     }
 
+    @Override
     public Book updateQuantity(Integer id, Integer quantity) {
-        Optional<Book> book = bookStoreRepository.findById(id);
-        if(book.isEmpty()) {
-            throw new BookStoreException("Book Record doesn't exists");
-        }
-        else {
-            book.get().setQuantity(quantity);
-            bookStoreRepository.save(book.get());
-            log.info("Quantity for book record updated successfully for id "+id);
-            return book.get();
-        }
+        Book book = bookStoreRepository.findById(id)
+                .orElseThrow(() -> new BookStoreException("Book Record doesn't exist"));
+        book.setQuantity(quantity);
+        bookStoreRepository.save(book);
+        log.info("Quantity for book record updated successfully for id " + id);
+        return book;
     }
-
-
 }

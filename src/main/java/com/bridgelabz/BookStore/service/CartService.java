@@ -3,7 +3,6 @@ package com.bridgelabz.BookStore.service;
 import com.bridgelabz.BookStore.dto.CartDTO;
 import com.bridgelabz.BookStore.dto.ResponseDTO;
 import com.bridgelabz.BookStore.exception.BookOrUserNotFoundException;
-import com.bridgelabz.BookStore.exception.BookStoreException;
 import com.bridgelabz.BookStore.exception.CartNotFoundException;
 import com.bridgelabz.BookStore.model.Book;
 import com.bridgelabz.BookStore.model.Cart;
@@ -18,11 +17,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
-public class CartService{
+public class CartService implements ICartService {
 
     @Autowired
     BookStoreRepository bookStoreRepository;
@@ -33,6 +31,7 @@ public class CartService{
 
 
 
+    @Override
     public ResponseDTO getCartDetails() {
         List<Cart> getCartDetails = bookStoreCartRepository.findAll();
         ResponseDTO dto = new ResponseDTO();
@@ -45,6 +44,7 @@ public class CartService{
         }
     }
 
+    @Override
     public ResponseEntity<ResponseDTO> getCartDetailsById(Integer cartId) {
         Cart getCartData = bookStoreCartRepository.findById(cartId)
                 .orElseThrow(() -> new CartNotFoundException("Didn't find any record for this particular cartId"));
@@ -53,6 +53,7 @@ public class CartService{
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    @Override
     public ResponseEntity<ResponseDTO> deleteCartItemById(Integer cartId) {
         Cart deleteData = bookStoreCartRepository.findById(cartId)
                 .orElseThrow(() -> new CartNotFoundException("Didn't get any cart for the specified cart id"));
@@ -61,7 +62,7 @@ public class CartService{
         ResponseDTO dto = new ResponseDTO("Cart item deleted successfully", deleteData);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
-
+    @Override
     public ResponseEntity<ResponseDTO> updateRecordById(Integer cartId, CartDTO cartDTO) {
         Cart cart = bookStoreCartRepository.findById(cartId)
                 .orElseThrow(() -> new CartNotFoundException("Cart Record doesn't exist"));
@@ -78,6 +79,7 @@ public class CartService{
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    @Override
     public ResponseEntity<ResponseDTO> insertItems(CartDTO cartdto) {
         Book book = bookStoreRepository.findById(cartdto.getBookId())
                 .orElseThrow(() -> new BookOrUserNotFoundException("Book doesn't exist"));

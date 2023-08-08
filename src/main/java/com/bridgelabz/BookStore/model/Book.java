@@ -39,4 +39,7 @@ public class Book {
         this.bookDescription=bookDTO.getBookDescription();
 
     }
+
+    public void updateFromDTO(BookDTO bookDTO) {
+    }
 }

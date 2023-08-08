@@ -4,6 +4,7 @@ import com.bridgelabz.BookStore.dto.BookDTO;
 import com.bridgelabz.BookStore.dto.ResponseDTO;
 import com.bridgelabz.BookStore.model.Book;
 import com.bridgelabz.BookStore.service.BookService;
+import com.bridgelabz.BookStore.service.IBookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ import java.util.Optional;
     public class BookController {
 
         @Autowired
-        BookService bookService;
+        IBookService bookService;
 
         // Add Data to repo
         @PostMapping("/insert")
@@ -41,7 +42,7 @@ import java.util.Optional;
         @GetMapping(value = "/getBy/{BookId}")
         public ResponseEntity<String> getBookDataById(@PathVariable int BookId)
         {
-            Optional<Book> Book = bookService.getBookDataById(BookId);
+            Book Book = bookService.getBookDataById(BookId);
             ResponseDTO dto = new ResponseDTO("Data retrieved successfully by id (:",Book);
             return new ResponseEntity(dto,HttpStatus.OK);
         }

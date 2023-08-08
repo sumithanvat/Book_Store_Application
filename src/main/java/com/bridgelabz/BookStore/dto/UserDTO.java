@@ -23,7 +23,5 @@ public class UserDTO {
     private String password; // Use password encoder
     @Email
     private String email;
-//    private boolean verify;
-//    private String otp;
 }
 

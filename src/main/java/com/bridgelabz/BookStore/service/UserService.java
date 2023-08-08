@@ -13,16 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
 @Service
-public class UserService {
+public class UserService implements IUserService {
 
     @Autowired
     private UserRegistrationRepository userRepository;
@@ -30,6 +27,8 @@ public class UserService {
     EmailSenderService mailService;
     @Autowired
     TokenUtility util;
+
+    @Override
     public String addUser(UserDTO userDTO) throws EmailAlreadyExistsException {
         // Check if email already exists in the database
         if (userRepository.existsByEmail(userDTO.getEmail())) {
@@ -45,6 +44,7 @@ public class UserService {
         return "User registered successfully. An OTP has been sent to your email for verification.";
     }
 
+    @Override
     public String loginUser(String email_id, String password) {
         UserRegistration login = userRepository.findByEmailid(email_id);
         if (login != null) {
@@ -61,6 +61,7 @@ public class UserService {
         }
     }
 
+    @Override
     public String sendOtp(String email) {
         UserRegistration userRegistration = userRepository.findByEmail(email);
         if (userRegistration != null) {
@@ -73,17 +74,20 @@ public class UserService {
         return null;
     }
 
+    @Override
     public boolean verifyOtp(String email, String otp) {
         UserRegistration userRegistration = userRepository.findByEmail(email);
         return userRegistration != null && userRegistration.getOtp().equals(otp);
     }
 
-    private String generateOTP() {
+    @Override
+    public String generateOTP() {
         // Generate a random 6-digit OTP
         Random random = new Random();
         int otp = 100000 + random.nextInt(900000);
         return String.valueOf(otp);
     }
+    @Override
     public String generateAndSendOtpForForgotPassword(String email) {
         String otp = generateOTP(); // Implement your OTP generation logic here
         mailService.sendForgotPasswordOtpEmail(email, otp); // Send OTP via email
@@ -91,6 +95,7 @@ public class UserService {
     }
 
     // Verify OTP and reset password
+    @Override
     public void resetPassword(String email, String newPassword) {
         UserRegistration user = userRepository.findByEmail(email);
         if (user != null) {
@@ -102,10 +107,12 @@ public class UserService {
         }
     }
 
+    @Override
     public List<UserRegistration> getAllUsers() {
         return userRepository.findAll();
     }
 
+    @Override
     public Object getUserById(String token) {
         int id = util.decodeToken(token);
         Optional<UserRegistration> getUser = userRepository.findById(id);
@@ -119,7 +126,7 @@ public class UserService {
         }
     }
 
-
+    @Override
     public UserRegistration updateUser(String email_id, UserDTO userDTO) {
         UserRegistration user = userRepository.findByEmailid(email_id);
         if (user == null) {
@@ -133,6 +140,7 @@ public class UserService {
         return newUser;
     }
 
+    @Override
     public String getToken(String email) {
         UserRegistration userRegistration = userRepository.findByEmailid(email);
         String token = util.createToken(userRegistration.getUserId());
@@ -141,17 +149,21 @@ public class UserService {
         return token;
     }
 
-    public ResponseEntity<ResponseDTO> deleteUserById(Integer id) {
-        Optional<UserRegistration> userToDelete = userRepository.findById(id);
-        if (userToDelete != null) {
-            userRepository.delete(userToDelete);
-            ResponseDTO responseDTO = new ResponseDTO("User deleted successfully", userToDelete);
-            return new ResponseEntity<>(responseDTO, HttpStatus.OK);
-        } else {
-            throw new UserNotFoundException("User not found");
-        }
-    }
 
+
+//    @Override
+//    public ResponseEntity<ResponseDTO> deleteUserById(Integer id) {
+//        Optional<UserRegistration> deleteById = userRepository.findById(id);
+//        if (deleteById != null) {
+//            userRepository.delete(deleteById);
+//            ResponseDTO responseDTO = new ResponseDTO("User deleted successfully", deleteById);
+//            return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+//        } else {
+//            throw new UserNotFoundException("User not found");
+//        }
+//    }
+
+    @Override
     public UserRegistration updateRecordById(Integer id, UserDTO userDTO) {
         Optional<UserRegistration> user = userRepository.findById(id);
         if (user != null) {
