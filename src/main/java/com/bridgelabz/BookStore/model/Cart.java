@@ -17,7 +17,7 @@ public class Cart {
     private Book book;
     private Integer quantity;
     private Double totalPrice;
-    // Calculate total price based on quantity and book price
+//    Calculate total price based on quantity and book price
     public void calculateTotalPrice() {
         if (book != null && quantity != null) {
             totalPrice = (double) (quantity * book.getPrice());

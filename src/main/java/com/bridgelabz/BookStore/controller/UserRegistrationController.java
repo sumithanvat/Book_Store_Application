@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 
@@ -97,18 +99,18 @@ public class UserRegistrationController {
         return new ResponseEntity(dto,HttpStatus.ACCEPTED);
     }
     // Delete User by ID
-//    @DeleteMapping("/delete/{id}")
-//    public ResponseEntity<ResponseDTO> deleteUserById(@PathVariable Integer id) {
-//        ResponseEntity<ResponseDTO> deletedUser = userRegistrationService.deleteUserById(id);
-//
-//        if (deletedUser != null) {
-//            ResponseDTO responseDTO = new ResponseDTO("User deleted successfully", deletedUser);
-//            return new ResponseEntity<>(responseDTO, HttpStatus.OK);
-//        } else {
-//            ResponseDTO responseDTO = new ResponseDTO("User not found", null);
-//            return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
-//        }
-//    }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ResponseDTO> deleteUserById(@PathVariable Integer id) {
+        ResponseEntity<ResponseDTO> deletedUser = userRegistrationService.deleteUserById(id);
+
+        if (deletedUser != null) {
+            ResponseDTO responseDTO = new ResponseDTO("User deleted successfully", deletedUser);
+            return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+        } else {
+            ResponseDTO responseDTO = new ResponseDTO("User not found", null);
+            return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
+        }
+    }
 
     @GetMapping("/getToken/{email}")
     public ResponseEntity<ResponseDTO> getToken(@PathVariable String email){

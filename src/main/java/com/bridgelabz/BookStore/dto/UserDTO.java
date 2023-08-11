@@ -2,9 +2,9 @@ package com.bridgelabz.BookStore.dto;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,11 +16,10 @@ public class UserDTO {
     private String firstName;
     @Pattern(regexp="^[A-Z]{1}[a-zA-Z\\s]{2,}$",message="Employee lastName is Not valid")
     private String lastName;
+    @JsonFormat(pattern = "dd/MMM/yyyy")
     private LocalDate dob;
-    //private LocalDate registeredDate;
-    //private LocalDate updatedDate;
     @NotEmpty
-    private String password; // Use password encoder
+    private String password;
     @Email
     private String email;
 }

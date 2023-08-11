@@ -34,5 +34,7 @@ public interface IUserService {
 
 //    ResponseEntity<ResponseDTO> deleteUserById(Integer id);
 
+    ResponseEntity<ResponseDTO> deleteUserById(Integer id);
+
     UserRegistration updateRecordById(Integer id, UserDTO userDTO);
 }

@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -36,6 +37,8 @@ public class UserService implements IUserService {
         }
 
         UserRegistration newUser = new UserRegistration(userDTO);
+        LocalDate currentDate=LocalDate.now();
+        newUser.setRegisteredDate(currentDate);
         userRepository.save(newUser);
 
         String otp = sendOtp(newUser.getEmail());
@@ -151,23 +154,23 @@ public class UserService implements IUserService {
 
 
 
-//    @Override
-//    public ResponseEntity<ResponseDTO> deleteUserById(Integer id) {
-//        Optional<UserRegistration> deleteById = userRepository.findById(id);
-//        if (deleteById != null) {
-//            userRepository.delete(deleteById);
-//            ResponseDTO responseDTO = new ResponseDTO("User deleted successfully", deleteById);
-//            return new ResponseEntity<>(responseDTO, HttpStatus.OK);
-//        } else {
-//            throw new UserNotFoundException("User not found");
-//        }
-//    }
+    @Override
+    public ResponseEntity<ResponseDTO> deleteUserById(Integer id) {
+        UserRegistration userToDelete = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        userRepository.delete(userToDelete);
+        ResponseDTO responseDTO = new ResponseDTO("User deleted successfully", userToDelete);
+        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+    }
 
     @Override
     public UserRegistration updateRecordById(Integer id, UserDTO userDTO) {
         Optional<UserRegistration> user = userRepository.findById(id);
         if (user != null) {
             UserRegistration newUser = new UserRegistration(id, userDTO);
+            LocalDate currentDate=LocalDate.now();
+            newUser.setUpdatedDate(currentDate);
             userRepository.save(newUser);
             return newUser;
         } else {
