@@ -773,3 +773,10 @@ com.bridgelabz.BookStore.exception.UserNotFoundException: User not found
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61) ~[tomcat-embed-core-10.1.11.jar:10.1.11]
 	at java.base/java.lang.Thread.run(Thread.java:1589) ~[na:na]
 
+2023-08-17T13:50:51.126+05:30  INFO 7740 --- [restartedMain] c.b.BookStore.BookStoreApplication       : Starting BookStoreApplication using Java 19.0.2 with PID 7740 (F:\BookStore\target\classes started by root in F:\BookStore)
+2023-08-17T13:50:51.134+05:30 DEBUG 7740 --- [restartedMain] c.b.BookStore.BookStoreApplication       : Running with Spring Boot v3.1.2, Spring v6.0.11
+2023-08-17T13:50:51.137+05:30  INFO 7740 --- [restartedMain] c.b.BookStore.BookStoreApplication       : No active profile set, falling back to 1 default profile: "default"
+2023-08-17T13:51:11.900+05:30  WARN 7740 --- [restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2023-08-17T13:51:12.820+05:30  WARN 7740 --- [restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2023-08-17T13:51:13.294+05:30  INFO 7740 --- [restartedMain] c.b.BookStore.BookStoreApplication       : Started BookStoreApplication in 24.476 seconds (process running for 27.85)
+2023-08-17T14:50:19.758+05:30  WARN 7740 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=50m45s937ms615µs200ns).
