@@ -4,16 +4,22 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDTO {
-    private int userId;
-    private int bookId;
-    private int quantity;
+    @NotNull
+    private Integer userId;
+    @NotNull
+    private Integer bookId;
+    @NotNull
+    private Integer quantity;
+    @NotEmpty
     private String address;
+    private boolean cancel;
 
-    public Object isCancel() {
-        return null;
-    }
 }
+

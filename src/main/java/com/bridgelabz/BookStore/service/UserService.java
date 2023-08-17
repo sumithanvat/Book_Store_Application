@@ -24,6 +24,7 @@ public class UserService implements IUserService {
 
     @Autowired
     private UserRegistrationRepository userRepository;
+
     @Autowired
     EmailSenderService mailService;
     @Autowired
@@ -31,25 +32,23 @@ public class UserService implements IUserService {
 
     @Override
     public String addUser(UserDTO userDTO) throws EmailAlreadyExistsException {
-        // Check if email already exists in the database
         if (userRepository.existsByEmail(userDTO.getEmail())) {
             throw new EmailAlreadyExistsException("Email already exists");
         }
 
         UserRegistration newUser = new UserRegistration(userDTO);
-        LocalDate currentDate=LocalDate.now();
+        LocalDate currentDate = LocalDate.now();
         newUser.setRegisteredDate(currentDate);
         userRepository.save(newUser);
-
         String otp = sendOtp(newUser.getEmail());
         mailService.sendEmail(newUser.getEmail(), "User registration otp", "Don't share this otp to anyone: " + otp);
 
-        return "User registered successfully. An OTP has been sent to your email for verification.";
-    }
+
+        return "Otp sent user registered successfully ";}
 
     @Override
     public String loginUser(String email_id, String password) {
-        UserRegistration login = userRepository.findByEmailid(email_id);
+        UserRegistration login = userRepository.findByEmailId(email_id);
         if (login != null) {
             String pass = login.getPassword();
             if (pass.equals(password)) {
@@ -80,7 +79,12 @@ public class UserService implements IUserService {
     @Override
     public boolean verifyOtp(String email, String otp) {
         UserRegistration userRegistration = userRepository.findByEmail(email);
-        return userRegistration != null && userRegistration.getOtp().equals(otp);
+        if(userRegistration!=null && userRegistration.getOtp().equals(otp)){
+            userRegistration.setVerify(true);
+            userRepository.save(userRegistration);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -131,7 +135,7 @@ public class UserService implements IUserService {
 
     @Override
     public UserRegistration updateUser(String email_id, UserDTO userDTO) {
-        UserRegistration user = userRepository.findByEmailid(email_id);
+        UserRegistration user = userRepository.findByEmailId(email_id);
         if (user == null) {
             throw new BookStoreException("User Details for email not found");
         }
@@ -145,7 +149,7 @@ public class UserService implements IUserService {
 
     @Override
     public String getToken(String email) {
-        UserRegistration userRegistration = userRepository.findByEmailid(email);
+        UserRegistration userRegistration = userRepository.findByEmailId(email);
         String token = util.createToken(userRegistration.getUserId());
         mailService.sendEmail(userRegistration.getEmail(), "Welcome " + userRegistration.getFirstName(),
                 "Token for changing password is: " + token);
@@ -177,6 +181,4 @@ public class UserService implements IUserService {
             throw new UserNotFoundException("User Details for id not found");
         }
     }
-
-
 }

@@ -3,6 +3,7 @@ package com.bridgelabz.BookStore.service;
 import com.bridgelabz.BookStore.dto.CartDTO;
 import com.bridgelabz.BookStore.dto.ResponseDTO;
 import com.bridgelabz.BookStore.exception.BookOrUserNotFoundException;
+import com.bridgelabz.BookStore.exception.BookStoreException;
 import com.bridgelabz.BookStore.exception.CartNotFoundException;
 import com.bridgelabz.BookStore.model.Book;
 import com.bridgelabz.BookStore.model.Cart;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -78,6 +80,29 @@ public class CartService implements ICartService {
         ResponseDTO dto = new ResponseDTO("Cart record updated successfully", newCart);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
+    @Override
+    public Cart increaseQuantity(Integer id) throws BookNotFoundException {
+        Cart cart = bookStoreCartRepository.findById(id).orElse(null);
+        if (cart == null) {
+            throw new CartNotFoundException("Cart Record with ID " + id + " doesn't exist");
+        } else {
+            Book book = bookStoreRepository.findById(cart.getBook().getBookId()).orElse(null);
+            if (book == null) {
+                throw new BookNotFoundException("Book with ID " + cart.getBook().getBookId() + " not found");
+            }
+
+            if (cart.getQuantity() < book.getQuantity()) {
+                cart.setQuantity(cart.getQuantity() + 1);
+                bookStoreCartRepository.save(cart);
+                log.info("Quantity in cart record updated successfully");
+                return cart;
+            } else {
+                throw new BookStoreException("Requested quantity is not available");
+            }
+        }
+    }
+
+
 
     @Override
     public ResponseEntity<ResponseDTO> insertItems(CartDTO cartdto) {

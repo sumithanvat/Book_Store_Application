@@ -7,12 +7,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRegistrationRepository extends JpaRepository<UserRegistration,Integer> {
-    @Query(value = "SELECT * FROM UserRegistration where email=:email_Id", nativeQuery = true)
-    public UserRegistration findByEmailid(String email_Id);
+    @Query(value = "SELECT * FROM User_Table where email=:email", nativeQuery = true)
+    public UserRegistration findByEmailId(String email);
 
     UserRegistration findByEmail(String email);
-
-//    void delete(Optional<UserRegistration> userToDelete);
 
     boolean existsByEmail(String email);
 }

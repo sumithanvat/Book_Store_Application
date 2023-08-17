@@ -3,6 +3,7 @@ package com.bridgelabz.BookStore.controller;
 import com.bridgelabz.BookStore.dto.CartDTO;
 import com.bridgelabz.BookStore.dto.ResponseDTO;
 import com.bridgelabz.BookStore.model.Cart;
+import com.bridgelabz.BookStore.service.BookNotFoundException;
 import com.bridgelabz.BookStore.service.CartService;
 import com.bridgelabz.BookStore.service.ICartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,12 @@ public class CartController {
     public ResponseEntity<ResponseDTO> getAllCartDetails() {
         ResponseDTO responseDTO = cartService.getCartDetails();
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+    }
+    @GetMapping("/increaseQuantity/{id}")
+    public ResponseEntity<ResponseDTO> increaseQuantity(@PathVariable Integer id) throws BookNotFoundException {
+        Cart newCart = cartService.increaseQuantity(id);
+        ResponseDTO dto = new ResponseDTO("Quantity for book record updated successfully !",newCart);
+        return new ResponseEntity(dto,HttpStatus.OK);
     }
 
 

@@ -2,18 +2,15 @@ package com.bridgelabz.BookStore.controller;
 import com.bridgelabz.BookStore.dto.ResponseDTO;
 import com.bridgelabz.BookStore.dto.UserDTO;
 import com.bridgelabz.BookStore.dto.UserLoginDTO;
+import com.bridgelabz.BookStore.exception.BookStoreException;
 import com.bridgelabz.BookStore.exception.EmailAlreadyExistsException;
 import com.bridgelabz.BookStore.model.UserRegistration;
-import com.bridgelabz.BookStore.repository.UserRegistrationRepository;
 import com.bridgelabz.BookStore.service.IUserService;
-import com.bridgelabz.BookStore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 
@@ -26,11 +23,17 @@ public class UserRegistrationController {
 
     //Add User
     @PostMapping("/register")
-    public ResponseEntity<String> addUser(@RequestBody UserDTO userDTO) throws EmailAlreadyExistsException {
-        userRegistrationService.addUser(userDTO);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body("User registered successfully. An OTP has been sent to your email for verification.");
+    public ResponseEntity<ResponseDTO> addUser(@RequestBody UserDTO userDTO) {
+        try {
+            String newUser = userRegistrationService.addUser(userDTO);
+            ResponseDTO responseDto = new ResponseDTO("User registered successfully. An OTP has been sent to your email for verification.", newUser);
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+        } catch (EmailAlreadyExistsException ex) {
+            ResponseDTO errorDto = new ResponseDTO("Error: " + ex.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
+        }
     }
+
     @PostMapping("/verifyotp")
     public String verifyOtp(@RequestParam String email, @RequestParam String otp) {
         boolean isValid = userRegistrationService.verifyOtp(email, otp);
@@ -41,8 +44,8 @@ public class UserRegistrationController {
     }
 
     //Login
-    @GetMapping("/login")//postMapping
-    public String userLogin(@RequestParam String email,@RequestParam String password) {
+    @PostMapping("/login")
+    public String userLogin(@RequestParam String email,@RequestParam String password)throws BookStoreException {
         UserLoginDTO userLoginDTO=new UserLoginDTO(email, password);
         String response = userRegistrationService.loginUser(userLoginDTO.getEmail(),userLoginDTO.getPassword());
         return response;
@@ -75,7 +78,7 @@ public class UserRegistrationController {
     }
 
     //Get All Users
-    @GetMapping(value = "/getAll")
+    @GetMapping("/getAll")
     public ResponseEntity<String> getAllUser()
     {
         List<UserRegistration> listOfUsers = userRegistrationService.getAllUsers();
