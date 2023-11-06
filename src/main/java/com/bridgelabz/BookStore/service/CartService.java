@@ -11,37 +11,62 @@ import com.bridgelabz.BookStore.model.UserRegistration;
 import com.bridgelabz.BookStore.repository.BookStoreCartRepository;
 import com.bridgelabz.BookStore.repository.BookStoreRepository;
 import com.bridgelabz.BookStore.repository.UserRegistrationRepository;
+import com.bridgelabz.BookStore.util.TokenUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
 public class CartService implements ICartService {
 
-    @Autowired
-    BookStoreRepository bookStoreRepository;
-    @Autowired
-    UserRegistrationRepository userRegistrationRepository;
-    @Autowired
-    BookStoreCartRepository bookStoreCartRepository;
 
+    @Autowired
+    private BookStoreRepository bookStoreRepository;
 
+    @Autowired
+    private UserRegistrationRepository userRegistrationRepository;
+
+    @Autowired
+    private BookStoreCartRepository bookStoreCartRepository;
+
+    @Autowired
+    private TokenUtility tokenUtility;
 
     @Override
-    public ResponseDTO getCartDetails() {
+    public Cart addItemToCart(CartDTO cartDTO, String token) {
+        System.out.println(cartDTO+"----------->"+token);
+        // Decode the token to get the user ID
+        int userId = tokenUtility.decodeToken(token);
+        Book book = bookStoreRepository.findById(cartDTO.getBookId())
+                .orElseThrow(() -> new BookOrUserNotFoundException("Book doesn't exist"));
+
+        UserRegistration userRegistration = userRegistrationRepository.findById(userId)
+                .orElseThrow(() -> new BookOrUserNotFoundException("User doesn't exist"));
+
+        Cart newCart = new Cart(cartDTO.getQuantity(), book, userRegistration);
+        return bookStoreCartRepository.save(newCart);
+    }
+    @Override
+    public ResponseDTO getCartDetails(String token) {
+        int userId = tokenUtility.decodeToken(token);
         List<Cart> getCartDetails = bookStoreCartRepository.findAll();
+        List<Cart> getUserSpecificCartDetail = new ArrayList<Cart>();
+        getCartDetails.forEach(i -> {if(i.getUser().getUserId() == userId){
+            getUserSpecificCartDetail.add(i);
+        }
+        });
         ResponseDTO dto = new ResponseDTO();
         if (getCartDetails.isEmpty()) {
             throw new CartNotFoundException("Not found any cart details");
         } else {
             dto.setMessage("The list of cart items is successfully retrieved");
-            dto.setData(getCartDetails);
+            dto.setData(getUserSpecificCartDetail);
             return new ResponseEntity<>(dto, HttpStatus.OK).getBody();
         }
     }
@@ -100,7 +125,11 @@ public class CartService implements ICartService {
                 throw new BookStoreException("Requested quantity is not available");
             }
         }
+
     }
+
+
+
 
 
 
@@ -117,7 +146,38 @@ public class CartService implements ICartService {
         ResponseDTO dto = new ResponseDTO("Items added to cart successfully", newCart);
         return new ResponseEntity<>(dto, HttpStatus.CREATED);
     }
+//@Override
+//    public List<Cart> getUserCart(Integer userId) {
+//        return BookStoreCartRepository.findByUserId(userId);
+//    }
 
+    @Override
+    public Cart decreaseQuantity(Integer id) throws BookNotFoundException {
+        Cart cart = bookStoreCartRepository.findById(id).orElse(null);
+        if (cart == null) {
+            throw new CartNotFoundException("Cart Record with ID " + id + " doesn't exist");
+        } else {
+            Book book = bookStoreRepository.findById(cart.getBook().getBookId()).orElse(null);
+            if (book == null) {
+                throw new BookNotFoundException("Book with ID " + cart.getBook().getBookId() + " not found");
+            }
 
+            if (cart.getQuantity() < book.getQuantity()) {
+                cart.setQuantity(cart.getQuantity() - 1);
+                bookStoreCartRepository.save(cart);
+                log.info("Quantity in cart record updated successfully");
+                return cart;
+            } else {
+                throw new BookStoreException("Requested quantity is not available");
+            }
+        }
     }
+
+    @Override
+    public List<Cart> getUserCart(Integer userId) {
+        return bookStoreCartRepository.findByUserId(userId);
+    }
+
+
+}
 

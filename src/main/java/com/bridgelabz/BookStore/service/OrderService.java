@@ -39,16 +39,20 @@ public class OrderService implements IOrderService {
         int requestedQuantity = orderDTO.getQuantity();
         int availableQuantity = book.getQuantity();
         log.info("Order record inserted successfully");
-        // Check if an existing cart entry with the same user, book, and quantity exists
-        Cart existingCartEntry = bookStoreCartRepository.findByUserAndBookAndQuantity(user.getUserId(), book.getBookId());
 
-        if (existingCartEntry != null) {
-            // Remove the existing cart entry
-            bookStoreCartRepository.delete(existingCartEntry);
-            log.info("Existing cart entry removed due to duplicate order");
+        // Retrieve all cart entries for the given user and book
+        List<Cart> existingCartEntries = bookStoreCartRepository.findByUserAndBookAndQuantity(user.getUserId(), book.getBookId());
+
+        // Handle the list of existing cart entries as needed (e.g., remove duplicates)
+
+        if (!existingCartEntries.isEmpty()) {
+            // Remove the existing cart entries
+            bookStoreCartRepository.deleteAll(existingCartEntries);
+            log.info("Existing cart entries removed due to duplicate orders");
         }
 
-
+        // Continue with the rest of your code to create and save the order
+        // ...
 
         if (requestedQuantity <= availableQuantity) {
             int bookTotalPrice = requestedQuantity * book.getPrice();
@@ -68,11 +72,11 @@ public class OrderService implements IOrderService {
             book.setQuantity(updatedQuantity);
             bookStoreRepository.save(book);
             return newOrder;
-    } else {
+        } else {
             throw new BookStoreException("Requested quantity is not available");
         }
-
     }
+
 
 
     @Override

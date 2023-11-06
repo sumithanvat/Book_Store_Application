@@ -19,7 +19,7 @@ public class OrderDTO {
     private Integer quantity;
     @NotEmpty
     private String address;
-    private boolean cancel;
+//    private boolean cancel;
 
 }
 

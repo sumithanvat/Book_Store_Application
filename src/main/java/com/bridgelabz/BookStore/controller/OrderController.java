@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 @RestController
+@CrossOrigin(allowedHeaders = "*",origins = "*")
 @RequestMapping("/order")
 public class OrderController {
     @Autowired
     private IOrderService orderService;
     @PostMapping("/insert")
     public ResponseEntity<ResponseDTO> insertOrder(@Valid @RequestBody OrderDTO orderDTO){
+//        System.out.println("Controller ---------------"+orderDTO);
         Order newOrder = orderService.insertOrder(orderDTO);
         ResponseDTO dto = new ResponseDTO("User registered successfully and order record inserted successfully!",newOrder);
         return new ResponseEntity(dto, HttpStatus.CREATED);

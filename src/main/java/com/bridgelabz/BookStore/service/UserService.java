@@ -47,8 +47,8 @@ public class UserService implements IUserService {
         return "Otp sent user registered successfully ";}
 
     @Override
-    public String loginUser(String email_id, String password) {
-        UserRegistration login = userRepository.findByEmailId(email_id);
+    public String loginUser(String email, String password) {
+        UserRegistration login = userRepository.findByEmailId(email);
         if (login != null) {
             String pass = login.getPassword();
             if (pass.equals(password)) {

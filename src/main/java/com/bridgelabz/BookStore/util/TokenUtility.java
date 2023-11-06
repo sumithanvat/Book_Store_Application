@@ -14,10 +14,9 @@ import org.springframework.stereotype.Component;
 public class TokenUtility {
     private static final String TOKEN_SECRET = "Sumit";
 
-
-    public  String createToken(int id)   {
+    public String createToken(int id) {
         try {
-            //to set algorithm
+            // Set the algorithm
             Algorithm algorithm = Algorithm.HMAC256(TOKEN_SECRET);
 
             String token = JWT.create()
@@ -26,37 +25,29 @@ public class TokenUtility {
             return token;
         } catch (JWTCreationException exception) {
             exception.printStackTrace();
-            //log Token Signing Failed
+            // Log Token Signing Failed
         } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;
     }
 
-
-    /**
-     * @param token
-     * @return
-     */
-    public int decodeToken(String token)
-    {
-        int userid;
-        //for verification algorithm
+    public int decodeToken(String token) {
+        int userId;
+        // Create the verification algorithm
         Verification verification = null;
         try {
             verification = JWT.require(Algorithm.HMAC256(TOKEN_SECRET));
-        } catch (IllegalArgumentException  e) {
-            // TODO Auto-generated catch block
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
-        JWTVerifier jwtverifier=verification.build();
-        //to decode token
-        DecodedJWT decodedjwt=jwtverifier.verify(token);
+        JWTVerifier jwtVerifier = verification.build();
 
-        Claim claim=decodedjwt.getClaim("user_id");
-        userid=claim.asInt();
-        return userid;
+        // Decode the token
+        DecodedJWT decodedJwt = jwtVerifier.verify(token);
 
+        Claim claim = decodedJwt.getClaim("user_id");
+        userId = claim.asInt();
+        return userId;
     }
 }

@@ -16,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user")
+@CrossOrigin(allowedHeaders = "*",origins = "*")
 public class UserRegistrationController {
 
     @Autowired

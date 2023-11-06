@@ -16,7 +16,7 @@ public class UserDTO {
     private String firstName;
     @Pattern(regexp="^[A-Z]{1}[a-zA-Z\\s]{2,}$",message="Employee lastName is Not valid")
     private String lastName;
-    @JsonFormat(pattern = "dd/MMM/yyyy")
+
     private LocalDate dob;
     @NotEmpty
     private String password;
